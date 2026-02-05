@@ -22,7 +22,7 @@ import omni.usd
 
 from isaacsim.core.utils.extensions import enable_extension
 enable_extension("isaacsim.robot_motion.motion_generation")
-enable_extension("isaacsim.ros2.bridge")
+# enable_extension("isaacsim.ros2.bridge")
 # import rclpy as ros2
 # from rclpy.node import Node
 # from sensor_msgs.msg import JointState
@@ -41,7 +41,7 @@ from isaaclab.actuators import ImplicitActuatorCfg
 from isaaclab.sensors import FrameTransformerCfg, OffsetCfg
 from isaaclab.controllers import DifferentialIKControllerCfg
 
-from isaaclab_ros2.managers import Ros2JointStatePublisherCfg
+# from isaaclab_ros2.managers import Ros2JointStatePublisherCfg
 
 import torch
 
@@ -65,8 +65,7 @@ class ActionsCfg:
             ik_method="dls",
             use_relative_mode=False,
         ),
-        # ADD THIS: This tells the IK to track the offset 
-        # defined in your FrameTransformer
+
         body_offset=OffsetCfg(pos=(0.00, 0.04, 0.11)), #0.0, 0.04, 0.11
     )
 
@@ -94,13 +93,13 @@ class ObservationsCfg:
     Last_action: LastAction = LastAction()
 
 
-    @configclass
-    class ObservationsCfg:
-        # This automatically creates the ROS 2 publisher without needing rclpy in your script
-        joint_state = Ros2JointStatePublisherCfg(
-            topic_name="joint_states",
-            asset_cfg=SceneEntityCfg("robot")
-        )
+    # @configclass
+    # class ObservationsCfg:
+    #     # This automatically creates the ROS 2 publisher without needing rclpy in your script
+    #     joint_state = Ros2JointStatePublisherCfg(
+    #         topic_name="joint_states",
+    #         asset_cfg=SceneEntityCfg("robot")
+    #     )
 
 
 @configclass
@@ -122,12 +121,12 @@ class PsyonicURSceneCfg(InteractiveSceneCfg):
     robot: ArticulationCfg = ArticulationCfg(
         prim_path="{ENV_REGEX_NS}/Robot", 
         spawn=sim_utils.UsdFileCfg(
-            usd_path="psyonic_UR_right_playground.usd",
+            usd_path="psyonic_UR_right_playground.usd", ##############################
         ),
         init_state=ArticulationCfg.InitialStateCfg(
             pos=(0.0, 0.0, 0.0),
             joint_pos={
-                "shoulder_pan_joint": -0.2, #0.0
+                "shoulder_pan_joint": -0.2, 
                 "shoulder_lift_joint": -1.27, 
                 "elbow_joint": 2.0, 
                 "wrist_1_joint": -0.80, 
@@ -177,7 +176,7 @@ class PsyonicURSceneCfg(InteractiveSceneCfg):
     target: RigidObjectCfg = RigidObjectCfg(
             prim_path="{ENV_REGEX_NS}/target",
             spawn=sim_utils.UsdFileCfg(
-                usd_path="assets/props/Beaker/beaker_500ml.usd",
+                usd_path="assets/props/Beaker/beaker_500ml.usd", ######################
                 rigid_props=sim_utils.RigidBodyPropertiesCfg(
                     rigid_body_enabled=True,
                     max_linear_velocity=1000.0,
@@ -186,7 +185,7 @@ class PsyonicURSceneCfg(InteractiveSceneCfg):
                 collision_props=sim_utils.CollisionPropertiesCfg(),
                 mass_props=sim_utils.MassPropertiesCfg(mass=1.0),
             ),
-            init_state=RigidObjectCfg.InitialStateCfg(pos=(0.6, 0.3, 0.25)),
+            init_state=RigidObjectCfg.InitialStateCfg(pos=(0.6, 0.3, 0.25)), ######################
     )
 
 
@@ -197,7 +196,7 @@ class PsyonicURSceneCfg(InteractiveSceneCfg):
             name="center_hand",
             prim_path="{ENV_REGEX_NS}/Robot/ur5e/wrist_3_link",
             offset=OffsetCfg(
-                pos=(0.0, 0.04, 0.11), #0.0, 0.04, 0.11
+                pos=(0.0, 0.04, 0.11),
             ),
         ),
     ],
@@ -234,18 +233,18 @@ class PickupCupCfg(ManagerBasedEnvCfg):
         self.sim.dt = 0.005  # sim step every 5ms: 200Hz
 
 
-class PsyonicNode(Node):
-    def __init__(self):
-        super().__init__('psyonic_node')
-        self.publisher = self.create_publisher(JointState, 'Psyonic_Topic', 10)
+# class PsyonicNode(Node):
+#     def __init__(self):
+#         super().__init__('psyonic_node')
+#         self.publisher = self.create_publisher(JointState, 'Psyonic_Topic', 10)
         
 
-    def publish_actions(self, actions):
-        self.msg = JointState()
-        self.msg.name = ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint', 'index_q1', 'middle_q1', 'ring_q1', 'pinky_q1', 'thumb_q1','index_q2', 'middle_q2', 'ring_q2', 'pinky_q2', 'thumb_q2']
-        self.msg.position = actions[0].cpu().tolist()
-        self.publisher.publish(self.msg)
-        self.get_logger().info('Published actions to Psyonic_Topic')
+#     def publish_actions(self, actions):
+#         self.msg = JointState()
+#         self.msg.name = ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint', 'index_q1', 'middle_q1', 'ring_q1', 'pinky_q1', 'thumb_q1','index_q2', 'middle_q2', 'ring_q2', 'pinky_q2', 'thumb_q2']
+#         self.msg.position = actions[0].cpu().tolist()
+#         self.publisher.publish(self.msg)
+#         self.get_logger().info('Published actions to Psyonic_Topic')
 
 
 
@@ -261,8 +260,8 @@ class PickupCup:
 
         actions = torch.zeros(self.env.num_envs, self.env.action_manager.total_action_dim, device=self.env.device)
 
-        ros2.init()
-        self.psy_node = PsyonicNode()
+        # ros2.init()
+        # self.psy_node = PsyonicNode()
 
         # self.robot_indices = [0,1,2,3,4,5,6,7,8,9,10,15]
         self.robot_indices = [0,1,2,3,4,9]
@@ -419,7 +418,7 @@ class PickupCup:
         target_pos[:,1] += self.buf_y
         target_pos[:,2] += self.buf_z
 
-        self.step_to(target_pos) ##
+        self.step_to(target_pos) 
 
         print("Reached target. Preparing to grasp.")
 
@@ -470,7 +469,7 @@ class PickupCup:
             self.obs, _ = self.env.step(self.obs["Last_action"])
             self.ros_command = self.obs["Robot_obs"]
             self.psy_node.publish_actions(self.ros_command)
-        target_pos = self.obs["Target_obs"]##
+        target_pos = self.obs["Target_obs"]
         target_pos[:,0] += -0.1
         target_pos[:,1] += -0.1
 
@@ -490,7 +489,7 @@ class PickupCup:
         target_pos[:,1] += self.buf_y
         target_pos[:,2] += self.buf_z
 
-        self.step_to(target_pos) ##
+        self.step_to(target_pos) 
 
         print("Reached target. Preparing to grasp.")
 
@@ -541,7 +540,7 @@ class PickupCup:
             self.obs, _ = self.env.step(self.obs["Last_action"])
             self.ros_command = self.obs["Robot_obs"]
             self.psy_node.publish_actions(self.ros_command)
-        target_pos = self.obs["Target_obs"]##
+        target_pos = self.obs["Target_obs"]
         target_pos[:,0] += -0.1
         target_pos[:,1] += -0.1
 
@@ -560,11 +559,11 @@ class PickupCup:
 
             self.init_hand()
 
-            self.target_pos= self.obs["Target_obs"]##
+            self.target_pos= self.obs["Target_obs"]
             self.calc_vect_to_goal(self.target_pos)
 
             if simulation_app.is_running():
-                self.target_pos= self.obs["Target_obs"]##
+                self.target_pos= self.obs["Target_obs"]
                 self.rmpflow_cycle()
                 self.env.reset()
 

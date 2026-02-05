@@ -22,10 +22,10 @@ import omni.usd
 
 from isaacsim.core.utils.extensions import enable_extension
 enable_extension("isaacsim.robot_motion.motion_generation")
-# enable_extension("isaacsim.ros2.bridge")
-# import rclpy as ros2
-# from rclpy.node import Node
-# from sensor_msgs.msg import JointState
+enable_extension("isaacsim.ros2.bridge")
+import rclpy as ros2
+from rclpy.node import Node
+from sensor_msgs.msg import JointState
 
 from isaaclab.assets import ArticulationCfg, Articulation, AssetBaseCfg, RigidObject, RigidObjectCfg
 import isaaclab.sim as sim_utils
@@ -121,7 +121,7 @@ class PsyonicURSceneCfg(InteractiveSceneCfg):
     robot: ArticulationCfg = ArticulationCfg(
         prim_path="{ENV_REGEX_NS}/Robot", 
         spawn=sim_utils.UsdFileCfg(
-            usd_path="psyonic_UR_right_playground.usd", ##############################
+            usd_path="PsyonicIsaacLabDemo/USD_assets/psyonic_UR_right_playground.usd", ##############################
         ),
         init_state=ArticulationCfg.InitialStateCfg(
             pos=(0.0, 0.0, 0.0),
@@ -176,7 +176,7 @@ class PsyonicURSceneCfg(InteractiveSceneCfg):
     target: RigidObjectCfg = RigidObjectCfg(
             prim_path="{ENV_REGEX_NS}/target",
             spawn=sim_utils.UsdFileCfg(
-                usd_path="assets/props/Beaker/beaker_500ml.usd", ######################
+                usd_path="PsyonicIsaacLabDemo/USD_assets/beaker_500ml.usd", ######################
                 rigid_props=sim_utils.RigidBodyPropertiesCfg(
                     rigid_body_enabled=True,
                     max_linear_velocity=1000.0,
@@ -233,18 +233,18 @@ class PickupCupCfg(ManagerBasedEnvCfg):
         self.sim.dt = 0.005  # sim step every 5ms: 200Hz
 
 
-# class PsyonicNode(Node):
-#     def __init__(self):
-#         super().__init__('psyonic_node')
-#         self.publisher = self.create_publisher(JointState, 'Psyonic_Topic', 10)
+class PsyonicNode(Node):
+    def __init__(self):
+        super().__init__('psyonic_node')
+        self.publisher = self.create_publisher(JointState, 'Psyonic_Topic', 10)
         
 
-#     def publish_actions(self, actions):
-#         self.msg = JointState()
-#         self.msg.name = ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint', 'index_q1', 'middle_q1', 'ring_q1', 'pinky_q1', 'thumb_q1','index_q2', 'middle_q2', 'ring_q2', 'pinky_q2', 'thumb_q2']
-#         self.msg.position = actions[0].cpu().tolist()
-#         self.publisher.publish(self.msg)
-#         self.get_logger().info('Published actions to Psyonic_Topic')
+    def publish_actions(self, actions):
+        self.msg = JointState()
+        self.msg.name = ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint', 'index_q1', 'middle_q1', 'ring_q1', 'pinky_q1', 'thumb_q1','index_q2', 'middle_q2', 'ring_q2', 'pinky_q2', 'thumb_q2']
+        self.msg.position = actions[0].cpu().tolist()
+        self.publisher.publish(self.msg)
+        self.get_logger().info('Published actions to Psyonic_Topic')
 
 
 
@@ -260,8 +260,8 @@ class PickupCup:
 
         actions = torch.zeros(self.env.num_envs, self.env.action_manager.total_action_dim, device=self.env.device)
 
-        # ros2.init()
-        # self.psy_node = PsyonicNode()
+        ros2.init()
+        self.psy_node = PsyonicNode()
 
         # self.robot_indices = [0,1,2,3,4,5,6,7,8,9,10,15]
         self.robot_indices = [0,1,2,3,4,9]

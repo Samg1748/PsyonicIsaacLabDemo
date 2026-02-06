@@ -6,20 +6,20 @@ from ah_wrapper import AHSerialClient
 class HandListener(Node):
     def __init__(self):
         super().__init__('Hand_listener')
-        # self.client = AHSerialClient()
+        self.client = AHSerialClient()
         self.subscription = self.create_subscription(JointState, 'Psyonic_Topic', self.listener_callback, 10)
         self.subscription  # prevent unused variable warning
 
 
     def listener_callback(self, msg):
         try:
-            # self.client.set_position(positions=[msg.position[6], msg.position[7], msg.position[8], msg.position[9], msg.position[10], msg.position[15]], reply_mode=2)
-            self.get_logger().info(f' recieved: {msg.position[6]} {msg.position[7]} {msg.position[8]} {msg.position[9]} {msg.position[10]} {msg.position[15]}')
+            self.client.set_position(positions=[msg.position[6]* (180/3.14*1.1), msg.position[7]* (180/3.14*1.1), msg.position[8]* (180/3.14*1.1), msg.position[9]* (180/3.14*1.1), msg.position[15]* (180/3.14*1.1), msg.position[10]* (180/3.14*1.1)], reply_mode=2)
+            self.get_logger().info(f' recieved: {msg.position[6]* (180/3.14*1.1)} {msg.position[7]* (180/3.14*1.1)} {msg.position[8]* (180/3.14*1.1)} {msg.position[9]* (180/3.14*1.1)} {msg.position[15]* (180/3.14*1.1)} {msg.position[10]* (180/3.14*1.1)}')
         except KeyboardInterrupt:
             print("Keyboard interrupt!!")
+            self.client.close()
         finally:
-            # self.client.close()
-            pass #remove later
+            pass
 
 
 

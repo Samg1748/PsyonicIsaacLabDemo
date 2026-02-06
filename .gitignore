@@ -32,6 +32,11 @@ MANIFEST
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
+*.pyc
+*.log
+
+psyonic_ros2_ws/build/*
+psyonic_ros2_ws/log/*
 
 # Installer logs
 pip-log.txt

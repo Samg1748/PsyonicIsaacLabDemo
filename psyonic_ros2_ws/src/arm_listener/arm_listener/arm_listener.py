@@ -7,7 +7,7 @@ class ArmListener(Node):
     def __init__(self):
         super().__init__('Arm_listener')
         self.rtde_c = rtde_control.RTDEControlInterface("192.168.1.10")
-        self.subscription = self.create_subscription(JointState, 'Psyonic_Topic', self.listener_callback, 10)
+        self.subscription = self.create_subscription(JointState, 'Psyonic_Topic', self.listener_callback, 1) #10
         self.subscription  # prevent unused variable warning
 
 

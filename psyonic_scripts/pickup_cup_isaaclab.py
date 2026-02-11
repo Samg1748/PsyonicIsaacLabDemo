@@ -147,22 +147,22 @@ class PsyonicURSceneCfg(InteractiveSceneCfg):
         actuators={
             "shoulder": ImplicitActuatorCfg(
                                         joint_names_expr=["shoulder_.*"],
-                                        stiffness=1320.0,
-                                        damping=72.6636085,
+                                        stiffness=1320000.0, #1320
+                                        damping=72000.6636085, #72.66
                                         friction=0.0,
                                         armature=0.0,
                                     ),
             "elbow": ImplicitActuatorCfg(
                                         joint_names_expr=["elbow_joint"],
-                                        stiffness=600.0,
-                                        damping=34.64101615,
+                                        stiffness=600000.0, #600
+                                        damping=34000.64101615, #34.64
                                         friction=0.0,
                                         armature=0.0,
                                     ),
             "wrist": ImplicitActuatorCfg(
                                         joint_names_expr=["wrist_.*"],
-                                        stiffness=216.0,
-                                        damping=29.39387691,
+                                        stiffness=2160000.0, #216
+                                        damping=29000.39387691, #29.4
                                         friction=0.0,
                                         armature=0.0,
                                     ),
@@ -255,7 +255,7 @@ class PsyonicNode(Node):
 
 
 class PickupCup:
-    def __init__(self):
+    def __init__(self, count_mode):
 
         env_cfg = PickupCupCfg()
         self.env = ManagerBasedEnv(cfg=env_cfg)
@@ -283,13 +283,13 @@ class PickupCup:
         self.arm_indices = torch.tensor([10, 11, 12, 13, 14, 15, 16], device=self.env.device)
         
         self.count = 0
-        self.count_mode = True
+        self.count_mode = count_mode
         
         self.env.reset()
         self.grasping = False
         self.buf_x = 0.0
         self.buf_y = -0.1
-        self.buf_z = 0.015
+        self.buf_z = 0.00
 
 
     def create_action(self, hand_joints, arm_pos):
@@ -310,7 +310,6 @@ class PickupCup:
             self.obs, _ = self.env.step(init_action)
             self.ros_command = self.obs["Robot_obs"]
             self.psy_node.publish_actions(self.ros_command)
-            # print(self.obs["Robot_obs"])
 
     def grasp(self):
         self.grasping = True
@@ -341,7 +340,7 @@ class PickupCup:
 
         self.calc_vect_to_goal(self.target_pos)
 
-        while (torch.max(torch.linalg.norm(self.vect_to_goal, dim=1)).item() >= 0.025):
+        while (torch.max(torch.linalg.norm(self.vect_to_goal, dim=1)).item() >= 0.02): #0.025
             self.count += 1
             if self.count_mode is True and self.count > 200:
                 self.count = 0
@@ -349,8 +348,7 @@ class PickupCup:
             else:
                 
                 self.calc_vect_to_goal(self.target_pos)
-                # print(f"INTEREST!!!!!!! Distance to target: {torch.max(torch.linalg.norm(self.vect_to_goal, dim=1)).item()}")
-                # print(f"self.target_pos: {self.obs['Robot_obs']}")
+                # print(torch.max(torch.linalg.norm(self.vect_to_goal)))
 
                 hand_actions = self.obs["Last_action"]
                 hand_actions = hand_actions[:, :6]
@@ -371,7 +369,7 @@ class PickupCup:
         self.target_pos= self.obs["Target_obs"]
         self.calc_vect_to_goal(self.target_pos)
 
-        while (torch.max(torch.linalg.norm(self.vect_to_goal, dim=1)).item() >= 0.04):
+        while (torch.max(torch.linalg.norm(self.vect_to_goal, dim=1)).item() >= 0.04): #0.04
             self.count += 1
             if self.count_mode is True and self.count > 200:
                 self.count = 0
@@ -403,7 +401,7 @@ class PickupCup:
         self.calc_vect_to_goal(self.target_pos)
         print("homing...")
 
-        while (torch.max(torch.linalg.norm(self.vect_to_goal, dim=1)).item() >= 0.05):
+        while (torch.max(torch.linalg.norm(self.vect_to_goal, dim=1)).item() >= 0.02): #0.05
             self.count += 1
             if self.count_mode is True and self.count > 200:
                 self.count = 0
@@ -411,7 +409,7 @@ class PickupCup:
             else:
                 
                 self.calc_vect_to_goal(self.target_pos)
-                # print(f"Distance to home: {torch.max(torch.linalg.norm(self.vect_to_goal, dim=1)).item()}")
+                
 
                 hand_actions = self.obs["Last_action"][:, :6]
                 pos = self.target_pos[:, :3]
@@ -435,27 +433,24 @@ class PickupCup:
     def rmpflow_cycle(self):
         self.count = 0
 
-
         target_pos = self.obs["Target_obs"]
-        target_pos[:,0] += self.buf_x
+        target_pos[:,0] += self.buf_x - 0.15
         target_pos[:,1] += self.buf_y
         target_pos[:,2] += self.buf_z
 
         self.step_to(target_pos) 
 
-        print("Reached target. Preparing to grasp.")
-
         for _ in range(10):
             self.obs, _ = self.env.step(self.obs["Last_action"])
             self.ros_command = self.obs["Robot_obs"]
             self.psy_node.publish_actions(self.ros_command)
+
         self.step_to_cup()
-        # print("Reached cup. Preparing to grasp.")
-       
+
         target_pos = self.obs["Target_obs"]
         target_pos[:,0] += 0.015
-        for _ in range(10):
-            self.step_to(target_pos)
+
+        self.step_to(target_pos)
 
         for _ in range(10):
             self.grasp()
@@ -465,33 +460,27 @@ class PickupCup:
         self.step_to(target_pos)
 
         self.step_home()
-        # print("Reached home position.")
+
 
         for _ in range(10):
             self.obs, _ = self.env.step(self.obs["Last_action"])
             self.ros_command = self.obs["Robot_obs"]
             self.psy_node.publish_actions(self.ros_command)
-        # print("Moving to drop-off position.")
+
         waypoint_1 = self.waypoint_1
-        waypoint_1[:,2] = 0.09
+        waypoint_1[:,2] = 0.09 ##
         self.step_to(waypoint_1)
 
 
-        for _ in range(10):
-            self.step_to(self.waypoint_1)
-            self.obs, _ = self.env.step(self.obs["Last_action"])
-            self.ros_command = self.obs["Robot_obs"]
+        self.step_to(self.waypoint_1)
 
 
         for _ in range(10):
             self.grip_release()
         print("released")
-        
-        for _ in range(10):
-            self.step_to(self.waypoint_1)
-            self.obs, _ = self.env.step(self.obs["Last_action"])
-            self.ros_command = self.obs["Robot_obs"]
-            self.psy_node.publish_actions(self.ros_command)
+
+        self.step_to(self.waypoint_1)
+
         target_pos = self.obs["Target_obs"]
         target_pos[:,0] += -0.1
         target_pos[:,1] += -0.1
@@ -514,19 +503,17 @@ class PickupCup:
 
         self.step_to(target_pos) 
 
-        
-
         for _ in range(10):
             self.obs, _ = self.env.step(self.obs["Last_action"])
             self.ros_command = self.obs["Robot_obs"]
             self.psy_node.publish_actions(self.ros_command)
+
         self.step_to_cup()
 
-       
         target_pos = self.obs["Target_obs"]
         target_pos[:,0] += 0.015
-        for _ in range(10):
-            self.step_to(target_pos)
+
+        self.step_to(target_pos)
 
         for _ in range(10):
             self.grasp()
@@ -536,33 +523,22 @@ class PickupCup:
         self.step_to(target_pos)
 
         self.step_home()
-        
 
         for _ in range(10):
             self.obs, _ = self.env.step(self.obs["Last_action"])
             self.ros_command = self.obs["Robot_obs"]
             self.psy_node.publish_actions(self.ros_command)
-        # print("Moving to drop-off position.")
+
         waypoint_1 = self.waypoint_2
-        waypoint_1[:,2] = 0.09
+        waypoint_1[:,2] = 0.09 ##
         self.step_to(waypoint_1)
 
-
-        for _ in range(10):
-            self.step_to(self.waypoint_2)
-            self.obs, _ = self.env.step(self.obs["Last_action"])
-            self.ros_command = self.obs["Robot_obs"]
-
+        self.step_to(self.waypoint_2)
 
         for _ in range(10):
             self.grip_release()
         print("released")
-        
-        for _ in range(10):
-            self.step_to(self.waypoint_2)
-            self.obs, _ = self.env.step(self.obs["Last_action"])
-            self.ros_command = self.obs["Robot_obs"]
-            self.psy_node.publish_actions(self.ros_command)
+
         target_pos = self.obs["Target_obs"]
         target_pos[:,0] += -0.1
         target_pos[:,1] += -0.1
@@ -582,8 +558,8 @@ class PickupCup:
 
             self.init_hand()
 
-            self.target_pos= self.obs["Target_obs"]
-            self.calc_vect_to_goal(self.target_pos)
+            # self.target_pos= self.obs["Target_obs"]
+            # self.calc_vect_to_goal(self.target_pos)
 
             self.rmpflow_cycle()
             self.env.reset()
@@ -594,5 +570,5 @@ class PickupCup:
 
 if __name__ == "__main__":
     print("Starting PickupCup script...")
-    pickup_cup = PickupCup()
+    pickup_cup = PickupCup(count_mode=False)
     pickup_cup.main()

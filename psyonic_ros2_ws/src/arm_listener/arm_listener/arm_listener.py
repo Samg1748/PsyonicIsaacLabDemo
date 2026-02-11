@@ -2,12 +2,19 @@ import rclpy as ros2
 from rclpy.node import Node
 import rtde_control
 from sensor_msgs.msg import JointState
+from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
 
 class ArmListener(Node):
     def __init__(self):
         super().__init__('Arm_listener')
         self.rtde_c = rtde_control.RTDEControlInterface("192.168.1.10")
-        self.subscription = self.create_subscription(JointState, 'Psyonic_Topic', self.listener_callback, 1) #10
+        
+        qos_profile_best_effort = QoSProfile(
+            reliability=ReliabilityPolicy.BEST_EFFORT,
+            durability=DurabilityPolicy.VOLATILE, # Volatile is typical for best effort according to internet
+            depth=1
+        )
+        self.subscription = self.create_subscription(JointState, 'Psyonic_Topic', self.listener_callback, qos_profile_best_effort) #10
         self.subscription  # prevent unused variable warning
 
 

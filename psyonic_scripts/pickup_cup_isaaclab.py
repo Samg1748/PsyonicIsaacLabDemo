@@ -18,6 +18,7 @@ enable_extension("isaacsim.ros2.bridge")
 import rclpy as ros2
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
+from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
 
 from isaaclab.assets import ArticulationCfg, Articulation, AssetBaseCfg, RigidObject, RigidObjectCfg
 import isaaclab.sim as sim_utils
@@ -83,14 +84,6 @@ class ObservationsCfg:
     
     Last_action: LastAction = LastAction()
 
-
-    # @configclass
-    # class ObservationsCfg:
-    #     # This automatically creates the ROS 2 publisher without needing rclpy in your script
-    #     joint_state = Ros2JointStatePublisherCfg(
-    #         topic_name="joint_states",
-    #         asset_cfg=SceneEntityCfg("robot")
-    #     )
 
 
 @configclass
@@ -180,7 +173,7 @@ class PsyonicURSceneCfg(InteractiveSceneCfg):
     target: RigidObjectCfg = RigidObjectCfg(
             prim_path="{ENV_REGEX_NS}/target",
             spawn=sim_utils.UsdFileCfg(
-                usd_path="PsyonicIsaacLabDemo/USD_assets/beaker_500ml.usd", ######################
+                usd_path="PsyonicIsaacLabDemo/USD_assets/beaker_500ml.usd", 
                 rigid_props=sim_utils.RigidBodyPropertiesCfg(
                     rigid_body_enabled=True,
                     max_linear_velocity=1000.0,
@@ -189,7 +182,7 @@ class PsyonicURSceneCfg(InteractiveSceneCfg):
                 collision_props=sim_utils.CollisionPropertiesCfg(),
                 mass_props=sim_utils.MassPropertiesCfg(mass=1.0),
             ),
-            init_state=RigidObjectCfg.InitialStateCfg(pos=(0.6, 0.3, 0.25)), ######################
+            init_state=RigidObjectCfg.InitialStateCfg(pos=(0.6, 0.3, 0.25)),
     )
 
 
@@ -240,7 +233,13 @@ class PickupCupCfg(ManagerBasedEnvCfg):
 class PsyonicNode(Node):
     def __init__(self):
         super().__init__('psyonic_node')
-        self.publisher = self.create_publisher(JointState, 'Psyonic_Topic', 10)
+        
+        qos_profile_best_effort = QoSProfile(
+            reliability=ReliabilityPolicy.BEST_EFFORT,
+            durability=DurabilityPolicy.VOLATILE, # Volatile is typical for best effort according to internet
+            depth=1
+        )
+        self.publisher = self.create_publisher(JointState, 'Psyonic_Topic', qos_profile_best_effort)
         
 
     def publish_actions(self, actions):
@@ -267,7 +266,6 @@ class PickupCup:
         ros2.init()
         self.psy_node = PsyonicNode()
 
-        # self.robot_indices = [0,1,2,3,4,5,6,7,8,9,10,15]
         self.robot_indices = [0,1,2,3,4,9]
 
 
@@ -278,7 +276,7 @@ class PickupCup:
         self.waypoint_2 = torch.tensor([[0.6, 0.4, 0.08]], dtype=torch.float32, device=self.env.device)
         self.home = False
 
-        self.hand_indices = torch.tensor([6, 7, 8, 9, 10, 15], device=self.env.device) ##########
+        self.hand_indices = torch.tensor([6, 7, 8, 9, 10, 15], device=self.env.device)
 
         self.arm_indices = torch.tensor([10, 11, 12, 13, 14, 15, 16], device=self.env.device)
         
@@ -336,7 +334,6 @@ class PickupCup:
     def step_to(self, position):
         self.waypoint = position
         self.target_pos = self.waypoint
-        # print(f"Stepping to position: {self.target_pos}\n\n")
 
         self.calc_vect_to_goal(self.target_pos)
 
@@ -348,7 +345,6 @@ class PickupCup:
             else:
                 
                 self.calc_vect_to_goal(self.target_pos)
-                # print(torch.max(torch.linalg.norm(self.vect_to_goal)))
 
                 hand_actions = self.obs["Last_action"]
                 hand_actions = hand_actions[:, :6]
@@ -375,9 +371,7 @@ class PickupCup:
                 self.count = 0
                 self.env.reset()
             else:
-                # print(f"Distance to cup: {torch.max(torch.linalg.norm(self.vect_to_goal, dim=1)).item()}")
                 self.target_pos= self.obs["Target_obs"]
-                # print(f"self.target_pos: {self.target_pos}")
                 self.calc_vect_to_goal(self.target_pos)
 
                 hand_actions = self.obs["Last_action"]
@@ -422,11 +416,9 @@ class PickupCup:
                 self.obs, _ = self.env.step(actions)
                 self.ros_command = self.obs["Robot_obs"]
                 self.psy_node.publish_actions(self.ros_command)
-                # print("homing...")
     
     def calc_vect_to_goal(self, target_pos):
         self.hand_pos = self.center_hand.data.target_pos_w[:, 0, :]
-        # print(f"self.hand_pos: {self.hand_pos}")
 
         self.vect_to_goal = torch.abs(target_pos - self.hand_pos)
 
@@ -558,14 +550,9 @@ class PickupCup:
 
             self.init_hand()
 
-            # self.target_pos= self.obs["Target_obs"]
-            # self.calc_vect_to_goal(self.target_pos)
-
             self.rmpflow_cycle()
             self.env.reset()
                 
-
-
         simulation_app.close()
 
 if __name__ == "__main__":

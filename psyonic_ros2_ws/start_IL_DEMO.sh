@@ -1,6 +1,0 @@
-source /opt/ros/jazzy/setup.bash
-source IL_ROS_env/bin/activate
-export PYTHONPATH=$PYTHONPATH:$(pwd)/IL_ROS_env/lib/python3.12/site-packages
-source install/setup.bash
-cd launch
-ros2 launch IL_demo_launch.py

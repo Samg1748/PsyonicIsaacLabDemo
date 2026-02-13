@@ -9,7 +9,10 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
+psyonic_ros2_ws/build/
+psyonic_ros2_ws/install/
+psyonic_ros2_ws/log/
+psyonic_ros2_ws/IL_ROS_venv/
 develop-eggs/
 dist/
 downloads/

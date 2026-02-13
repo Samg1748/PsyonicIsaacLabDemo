@@ -19,7 +19,9 @@ class ArmListener(Node):
 
 
     def listener_callback(self, msg):
-        self.rtde_c.moveJ(msg.position[:6], 1.05, 1.4)
+        msg.position[0] += -1.5708 ##EXTREMELY SPECIFIC TO MR USE CASE
+        # self.rtde_c.moveJ(msg.position[:6], 1.05, 1.4)
+        self.rtde_c.servoJ(msg.position[:6], 1.05, 1.4, 0.11, 0.2, 300)
         self.get_logger().info(f'recieved: {msg.position[:6]}')
 
 def main():

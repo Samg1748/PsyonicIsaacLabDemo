@@ -432,7 +432,7 @@ class PickupCup:
 
         self.step_to(target_pos) 
 
-        for _ in range(10):
+        for _ in range(5):
             self.obs, _ = self.env.step(self.obs["Last_action"])
             self.ros_command = self.obs["Robot_obs"]
             self.psy_node.publish_actions(self.ros_command)
@@ -444,6 +444,11 @@ class PickupCup:
 
         self.step_to(target_pos)
 
+        for _ in range(5):
+            self.obs, _ = self.env.step(self.obs["Last_action"])
+            self.ros_command = self.obs["Robot_obs"]
+            self.psy_node.publish_actions(self.ros_command)
+
         for _ in range(10):
             self.grasp()
         print("grasped")
@@ -454,10 +459,10 @@ class PickupCup:
         self.step_home()
 
 
-        for _ in range(10):
-            self.obs, _ = self.env.step(self.obs["Last_action"])
-            self.ros_command = self.obs["Robot_obs"]
-            self.psy_node.publish_actions(self.ros_command)
+        # for _ in range(10):
+        #     self.obs, _ = self.env.step(self.obs["Last_action"])
+        #     self.ros_command = self.obs["Robot_obs"]
+        #     self.psy_node.publish_actions(self.ros_command)
 
         waypoint_1 = self.waypoint_1
         waypoint_1[:,2] = 0.09 ##
@@ -466,8 +471,12 @@ class PickupCup:
 
         self.step_to(self.waypoint_1)
 
+        for _ in range(5):
+            self.obs, _ = self.env.step(self.obs["Last_action"])
+            self.ros_command = self.obs["Robot_obs"]
+            self.psy_node.publish_actions(self.ros_command)
 
-        for _ in range(10):
+        for _ in range(5):
             self.grip_release()
         print("released")
 
@@ -481,10 +490,10 @@ class PickupCup:
 
         self.step_home()
 
-        for _ in range(10):
-            self.obs, _ = self.env.step(self.obs["Last_action"])
-            self.ros_command = self.obs["Robot_obs"]
-            self.psy_node.publish_actions(self.ros_command)
+        # for _ in range(10):
+        #     self.obs, _ = self.env.step(self.obs["Last_action"])
+        #     self.ros_command = self.obs["Robot_obs"]
+        #     self.psy_node.publish_actions(self.ros_command)
 
         #end of cycle
 
@@ -495,7 +504,7 @@ class PickupCup:
 
         self.step_to(target_pos) 
 
-        for _ in range(10):
+        for _ in range(5):
             self.obs, _ = self.env.step(self.obs["Last_action"])
             self.ros_command = self.obs["Robot_obs"]
             self.psy_node.publish_actions(self.ros_command)
@@ -507,7 +516,12 @@ class PickupCup:
 
         self.step_to(target_pos)
 
-        for _ in range(10):
+        for _ in range(5):
+            self.obs, _ = self.env.step(self.obs["Last_action"])
+            self.ros_command = self.obs["Robot_obs"]
+            self.psy_node.publish_actions(self.ros_command)
+
+        for _ in range(5):
             self.grasp()
         print("grasped")
 
@@ -516,10 +530,10 @@ class PickupCup:
 
         self.step_home()
 
-        for _ in range(10):
-            self.obs, _ = self.env.step(self.obs["Last_action"])
-            self.ros_command = self.obs["Robot_obs"]
-            self.psy_node.publish_actions(self.ros_command)
+        # for _ in range(10):
+        #     self.obs, _ = self.env.step(self.obs["Last_action"])
+        #     self.ros_command = self.obs["Robot_obs"]
+        #     self.psy_node.publish_actions(self.ros_command)
 
         waypoint_1 = self.waypoint_2
         waypoint_1[:,2] = 0.09 ##
@@ -527,7 +541,12 @@ class PickupCup:
 
         self.step_to(self.waypoint_2)
 
-        for _ in range(10):
+        for _ in range(5):
+            self.obs, _ = self.env.step(self.obs["Last_action"])
+            self.ros_command = self.obs["Robot_obs"]
+            self.psy_node.publish_actions(self.ros_command)
+
+        for _ in range(5):
             self.grip_release()
         print("released")
 
@@ -539,10 +558,10 @@ class PickupCup:
 
         self.step_home()
 
-        for _ in range(10):
-            self.obs, _ = self.env.step(self.obs["Last_action"])
-            self.ros_command = self.obs["Robot_obs"]
-            self.psy_node.publish_actions(self.ros_command)
+        # for _ in range(10):
+        #     self.obs, _ = self.env.step(self.obs["Last_action"])
+        #     self.ros_command = self.obs["Robot_obs"]
+        #     self.psy_node.publish_actions(self.ros_command)
     
     def main(self):
 
@@ -551,7 +570,7 @@ class PickupCup:
             self.init_hand()
 
             self.rmpflow_cycle()
-            self.env.reset()
+            # self.env.reset()
                 
         simulation_app.close()
 

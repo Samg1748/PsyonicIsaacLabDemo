@@ -3,6 +3,7 @@ from isaaclab.app import AppLauncher
 app_launcher = AppLauncher()
 simulation_app = app_launcher.app
 
+
 from pprint import pprint
 
 import os
@@ -178,7 +179,7 @@ class PsyonicURSceneCfg(InteractiveSceneCfg):
                     rigid_body_enabled=True,
                     max_linear_velocity=1000.0,
                 ),
-                scale=(0.5, 0.5, 1.0),
+                scale=(0.45, 0.45, 0.9), #0.5, 0.5, 1.0
                 collision_props=sim_utils.CollisionPropertiesCfg(),
                 mass_props=sim_utils.MassPropertiesCfg(mass=1.0),
             ),
@@ -224,6 +225,7 @@ class PickupCupCfg(ManagerBasedEnvCfg):
     
         self.viewer.eye = [1.25, 0.0, 1.75]
         self.viewer.lookat = [0.35, 0.0, 0.0]
+
         # step settings
         self.decimation = 4  # env step every 4 sim steps: 200Hz / 4 = 50Hz
         # simulation settings
@@ -284,6 +286,13 @@ class PickupCup:
         self.count_mode = count_mode
         
         self.env.reset()
+
+        from omni.kit.viewport.utility import get_active_viewport_window
+
+        # Get the existing viewport to modify resolution or settings
+        viewport_window = get_active_viewport_window()
+        viewport_window.viewport_api.resolution = (1920, 960)
+
         self.grasping = False
         self.buf_x = 0.0
         self.buf_y = -0.1
@@ -314,6 +323,8 @@ class PickupCup:
 
         self.target_pos = self.hand_pos
         grasp_hand_joints = torch.tensor([[0.52, 0.52, 0.52, 0.52, -1.7, 0.15]], dtype=torch.float32, device=self.env.device)
+        grasp_hand_joints = torch.tensor([[0.60, 0.60, 0.60, 0.60, -1.7, 0.15]], dtype=torch.float32, device=self.env.device)
+        
         arm_pos = self.obs["Last_action"][:, 6:]
         grasp_hand_action = self.create_action(grasp_hand_joints, arm_pos)
         self.obs, _ = self.env.step(grasp_hand_action)
@@ -437,7 +448,7 @@ class PickupCup:
             self.ros_command = self.obs["Robot_obs"]
             self.psy_node.publish_actions(self.ros_command)
 
-        self.step_to_cup()
+        # self.step_to_cup()
 
         target_pos = self.obs["Target_obs"]
         target_pos[:,0] += 0.015
@@ -453,16 +464,11 @@ class PickupCup:
             self.grasp()
         print("grasped")
 
-        target_pos[:,2] += 0.2
-        self.step_to(target_pos)
+        # target_pos[:,2] += 0.2
+        # self.step_to(target_pos)
 
         self.step_home()
 
-
-        # for _ in range(10):
-        #     self.obs, _ = self.env.step(self.obs["Last_action"])
-        #     self.ros_command = self.obs["Robot_obs"]
-        #     self.psy_node.publish_actions(self.ros_command)
 
         waypoint_1 = self.waypoint_1
         waypoint_1[:,2] = 0.09 ##
@@ -480,7 +486,7 @@ class PickupCup:
             self.grip_release()
         print("released")
 
-        self.step_to(self.waypoint_1)
+        # self.step_to(self.waypoint_1)
 
         target_pos = self.obs["Target_obs"]
         target_pos[:,0] += -0.1
@@ -488,12 +494,8 @@ class PickupCup:
 
         self.step_to(target_pos)
 
-        self.step_home()
+        # self.step_home()
 
-        # for _ in range(10):
-        #     self.obs, _ = self.env.step(self.obs["Last_action"])
-        #     self.ros_command = self.obs["Robot_obs"]
-        #     self.psy_node.publish_actions(self.ros_command)
 
         #end of cycle
 
@@ -509,7 +511,7 @@ class PickupCup:
             self.ros_command = self.obs["Robot_obs"]
             self.psy_node.publish_actions(self.ros_command)
 
-        self.step_to_cup()
+        # self.step_to_cup()
 
         target_pos = self.obs["Target_obs"]
         target_pos[:,0] += 0.015
@@ -525,15 +527,10 @@ class PickupCup:
             self.grasp()
         print("grasped")
 
-        target_pos[:,2] += 0.2
-        self.step_to(target_pos)
+        # target_pos[:,2] += 0.2
+        # self.step_to(target_pos)
 
         self.step_home()
-
-        # for _ in range(10):
-        #     self.obs, _ = self.env.step(self.obs["Last_action"])
-        #     self.ros_command = self.obs["Robot_obs"]
-        #     self.psy_node.publish_actions(self.ros_command)
 
         waypoint_1 = self.waypoint_2
         waypoint_1[:,2] = 0.09 ##
@@ -556,12 +553,7 @@ class PickupCup:
 
         self.step_to(target_pos)
 
-        self.step_home()
-
-        # for _ in range(10):
-        #     self.obs, _ = self.env.step(self.obs["Last_action"])
-        #     self.ros_command = self.obs["Robot_obs"]
-        #     self.psy_node.publish_actions(self.ros_command)
+        # self.step_home()
     
     def main(self):
 

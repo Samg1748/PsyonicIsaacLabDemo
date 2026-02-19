@@ -448,7 +448,6 @@ class PickupCup:
             self.ros_command = self.obs["Robot_obs"]
             self.psy_node.publish_actions(self.ros_command)
 
-        # self.step_to_cup()
 
         target_pos = self.obs["Target_obs"]
         target_pos[:,0] += 0.015
@@ -464,8 +463,6 @@ class PickupCup:
             self.grasp()
         print("grasped")
 
-        # target_pos[:,2] += 0.2
-        # self.step_to(target_pos)
 
         self.step_home()
 
@@ -482,19 +479,16 @@ class PickupCup:
             self.ros_command = self.obs["Robot_obs"]
             self.psy_node.publish_actions(self.ros_command)
 
-        for _ in range(5):
+        for _ in range(10):
             self.grip_release()
         print("released")
 
-        # self.step_to(self.waypoint_1)
 
         target_pos = self.obs["Target_obs"]
         target_pos[:,0] += -0.1
         target_pos[:,1] += -0.1
 
         self.step_to(target_pos)
-
-        # self.step_home()
 
 
         #end of cycle
@@ -511,8 +505,6 @@ class PickupCup:
             self.ros_command = self.obs["Robot_obs"]
             self.psy_node.publish_actions(self.ros_command)
 
-        # self.step_to_cup()
-
         target_pos = self.obs["Target_obs"]
         target_pos[:,0] += 0.015
 
@@ -523,12 +515,10 @@ class PickupCup:
             self.ros_command = self.obs["Robot_obs"]
             self.psy_node.publish_actions(self.ros_command)
 
-        for _ in range(5):
+        for _ in range(10):
             self.grasp()
         print("grasped")
 
-        # target_pos[:,2] += 0.2
-        # self.step_to(target_pos)
 
         self.step_home()
 
@@ -543,7 +533,7 @@ class PickupCup:
             self.ros_command = self.obs["Robot_obs"]
             self.psy_node.publish_actions(self.ros_command)
 
-        for _ in range(5):
+        for _ in range(10):
             self.grip_release()
         print("released")
 
@@ -553,7 +543,6 @@ class PickupCup:
 
         self.step_to(target_pos)
 
-        # self.step_home()
     
     def main(self):
 
@@ -562,7 +551,6 @@ class PickupCup:
             self.init_hand()
 
             self.rmpflow_cycle()
-            # self.env.reset()
                 
         simulation_app.close()
 

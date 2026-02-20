@@ -60,13 +60,6 @@ class ObservationsCfg:
 
 
     @configclass
-    class TargetObsCfg(ObsGroup):
-        ik_pos = ObsTerm(func=mdp.root_pos_w, params={"asset_cfg": SceneEntityCfg(name="target")})
-
-    Target_obs: TargetObsCfg = TargetObsCfg()
-
-
-    @configclass
     class LastAction(ObsGroup):
         last_action = ObsTerm(func=mdp.last_action)
     
@@ -83,19 +76,6 @@ class EventCfg:
             "asset_cfg": SceneEntityCfg("robot", joint_names=["shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", "wrist_3_joint", "index_q1", "middle_q1", "ring_q1", "pinky_q1", "thumb_q1", "thumb_q2"]),
             "position_range": (-0.0001, 0.00001),
             "velocity_range": (-0.0001, 0.0001),
-        },
-    )
-
-@configclass
-class MyEventCfg:
-    # This event happens every time an episode resets
-    reset_target_root = EventTerm(
-        func=mdp.reset_root_state_uniform,
-        mode="reset",
-        params={
-            "pose_range": {"x": (-1.0, 1.0), "y": (-1.0, 1.0), "yaw": (-3.14, 3.14)},
-            "velocity_range": {}, # Default is zero if left empty
-            "asset_cfg": SceneEntityCfg("target"),
         },
     )
 
@@ -128,49 +108,34 @@ class PsyonicURSceneCfg(InteractiveSceneCfg):
         actuators={
             "shoulder": ImplicitActuatorCfg(
                                         joint_names_expr=["shoulder_.*"],
-                                        stiffness=1320000.0, #1320
-                                        damping=72000.6636085, #72.66
+                                        stiffness=1320.0, #1320
+                                        damping=72.6636085, #72.66
                                         friction=0.0,
                                         armature=0.0,
                                     ),
             "elbow": ImplicitActuatorCfg(
                                         joint_names_expr=["elbow_joint"],
-                                        stiffness=600000.0, #600
-                                        damping=34000.64101615, #34.64
+                                        stiffness=600.0, #600
+                                        damping=34.64101615, #34.64
                                         friction=0.0,
                                         armature=0.0,
                                     ),
             "wrist": ImplicitActuatorCfg(
                                         joint_names_expr=["wrist_.*"],
-                                        stiffness=2160000.0, #216
-                                        damping=29000.39387691, #29.4
+                                        stiffness=216.0, #216
+                                        damping=29.39387691, #29.4
                                         friction=0.0,
                                         armature=0.0,
                                     ),
             "hand": ImplicitActuatorCfg(
                                         joint_names_expr=["index_q1", "middle_q1", "ring_q1", "pinky_q1", "thumb_q1", "thumb_q2"],
                                         stiffness=10000.0,
-                                        damping=50.0,
+                                        damping=500.0,
                                         friction=0.0,
                                         armature=0.0,
                                     ),
                                     
         }
-    )
-    
-    target: RigidObjectCfg = RigidObjectCfg(
-            prim_path="{ENV_REGEX_NS}/target",
-            spawn=sim_utils.UsdFileCfg(
-                usd_path="PsyonicIsaacLabDemo/USD_assets/beaker_500ml.usd", 
-                rigid_props=sim_utils.RigidBodyPropertiesCfg(
-                    rigid_body_enabled=True,
-                    max_linear_velocity=1000.0,
-                ),
-                scale=(0.45, 0.45, 0.9), #0.5, 0.5, 1.0
-                collision_props=sim_utils.CollisionPropertiesCfg(),
-                mass_props=sim_utils.MassPropertiesCfg(mass=1.0),
-            ),
-            init_state=RigidObjectCfg.InitialStateCfg(pos=(0.6, 0.3, 0.25)),
     )
 
 
@@ -214,9 +179,9 @@ class PickupCupCfg(ManagerBasedEnvCfg):
         self.viewer.lookat = [0.35, 0.0, 0.0]
 
         # step settings
-        self.decimation = 4  # env step every 4 sim steps: 200Hz / 4 = 50Hz
+        self.decimation = 1  # env step every 4 sim steps: 200Hz / 4 = 50Hz
         # simulation settings
-        self.sim.dt = 0.005  # sim step every 5ms: 200Hz
+        self.sim.dt = 0.05  # sim step every 5ms: 200Hz
 
 
 class PsyonicNode(Node):
@@ -246,6 +211,13 @@ class PsyonicNode(Node):
     def sim_callback(self, msg):
         self.msg = msg
         self.msg.position[0] += 1.5708 #####CHECK THISSSS
+        self.msg.position[6] *= (3.14/180/1.1)
+        self.msg.position[7] *= (3.14/180/1.1)
+        self.msg.position[8] *= (3.14/180/1.1)
+        self.msg.position[9] *= (3.14/180/1.1)
+        self.msg.position[10] *= (3.14/180/1.1)
+        self.msg.position[11] *= (3.14/180/1.1)
+        self.msg.position[10], self.msg.position[11] = self.msg.position[11], self.msg.position[10]
         self.get_logger().info(f'recieved: {self.msg.position}')
         action = torch.tensor(msg.position, device=self.env.device)
         actions = action.repeat(self.env.num_envs, 1)

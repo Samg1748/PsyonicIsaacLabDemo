@@ -49,40 +49,61 @@ class Real2SimNode(Node):
         with self.lock:
             self.latest_robot_position = arm_position + hand_position
         
-        self.rtde_c.moveJ(arm_position, 0.5, 1.0) #1.05 1.4
+        self.rtde_c.moveJ(arm_position, 2.0, 1.4) #1.05 1.4
         self.client.set_position(hand_position)
         time.sleep(0.05)
 
 
     def robot_control_loop(self):
 
-        start_arm = [-91 * (3.14/180), -80 * (3.14/180), 107 * (3.14/180), -32 * (3.14/180), 90 * (3.14/180), -100 * (3.14/180)]
-        cup_arm_pos = [-85 * (3.14/180), -61 * (3.14/180), 130 * (3.14/180), -69 * (3.14/180), 90 * (3.14/180), -90 * (3.14/180)]
         hand_open = [0, 0, 0, 0, 10, -100]
-        cup_flipped_arm_pos = [-70 * (3.14/180), -60 * (3.14/180), 105 * (3.14/180), -45 * (3.14/180), 107 * (3.14/180), -270 * (3.14/180)]
         hand_closed = [40, 40, 40, 40, 10, -100]
-        cup_flipped_set_arm_pos = [-65 * (3.14/180), -51 * (3.14/180), 106 * (3.14/180), -50 * (3.14/180), 107 * (3.14/180), -270 * (3.14/180)]
-        cup_flipped_set_far_pos = [-59 * (3.14/180), -57 * (3.14/180), 100 * (3.14/180), -45 * (3.14/180), 120 * (3.14/180), -270 * (3.14/180)]
-        arm_hand_demo = [-60 * (3.14/180), -50 * (3.14/180), 100 * (3.14/180), -140 * (3.14/180), 90 * (3.14/180), -200 * (3.14/180)]
+        
+        cup_arm_pos = [-93.5 * (3.14/180), -60 * (3.14/180), 130 * (3.14/180), -70 * (3.14/180), 90 * (3.14/180), -91 * (3.14/180)]
+        cup_up_arm_pos = [-93.5 * (3.14/180), -78 * (3.14/180), 125 * (3.14/180), -47 * (3.14/180), 90 * (3.14/180), -91 * (3.14/180)]
+        cup_flipped_arm_pos = [-72 * (3.14/180), -71 * (3.14/180), 115 * (3.14/180), -43 * (3.14/180), 110 * (3.14/180), -270 * (3.14/180)]
+        cup_flipped_down_pos = [-72 * (3.14/180), -56 * (3.14/180), 120 * (3.14/180), -62 * (3.14/180), 110 * (3.14/180), -270 * (3.14/180)]
+        arm_flipped_back_pos = [-60 * (3.14/180), -56 * (3.14/180), 120 * (3.14/180), -63 * (3.14/180), 124 * (3.14/180), -270 * (3.14/180)]
+        arm_reset_pos = [-106 * (3.14/180), -70 * (3.14/180), 147 * (3.14/180), -80 * (3.14/180), 75 * (3.14/180), -90 * (3.14/180)]
+        # arm_demo_pos = [-77 * (3.14/180), -84 * (3.14/180), 117 * (3.14/180), -32 * (3.14/180), 105 * (3.14/180), -180 * (3.14/180)]
+        
 
 
         while self.running and ros2.ok():
 
-            self.send_robot_action(start_arm, hand_open)
+            # self.send_robot_action(arm_demo_pos, hand_open)
+
+            self.send_robot_action(arm_reset_pos, hand_open)
 
             self.send_robot_action(cup_arm_pos, hand_open)
 
             self.send_robot_action(cup_arm_pos, hand_closed)
 
+            self.send_robot_action(cup_up_arm_pos, hand_closed)
+
             self.send_robot_action(cup_flipped_arm_pos, hand_closed)
 
-            self.send_robot_action(cup_flipped_set_arm_pos, hand_closed)
+            self.send_robot_action(cup_flipped_down_pos, hand_closed)
 
-            self.send_robot_action(cup_flipped_set_arm_pos, hand_open)
+            self.send_robot_action(cup_flipped_down_pos, hand_open)
+            
+            self.send_robot_action(arm_flipped_back_pos, hand_open)
+ ###########################
+            self.send_robot_action(arm_flipped_back_pos, hand_open)
 
-            self.send_robot_action(cup_flipped_set_far_pos, hand_open)
+            self.send_robot_action(cup_flipped_down_pos, hand_open)
 
-            self.send_robot_action(arm_hand_demo, hand_open)
+            self.send_robot_action(cup_flipped_down_pos, hand_closed)
+
+            self.send_robot_action(cup_flipped_arm_pos, hand_closed)
+
+            self.send_robot_action(cup_up_arm_pos, hand_closed)
+
+            self.send_robot_action(cup_arm_pos, hand_open)
+
+            self.send_robot_action(arm_reset_pos, hand_open)
+
+            # self.send_robot_action(arm_demo_pos, hand_open)
 
 
     def destroy_node(self):

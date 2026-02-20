@@ -89,7 +89,7 @@ class PsyonicURSceneCfg(InteractiveSceneCfg):
             usd_path="PsyonicIsaacLabDemo/USD_assets/psyonic_UR_right_playground.usd", ##############################
         ),
         init_state=ArticulationCfg.InitialStateCfg(
-            pos=(0.0, 0.0, 0.0),
+            pos=(0.0, 0.0, 0.035),
             joint_pos={
                 "shoulder_pan_joint": -0.2, 
                 "shoulder_lift_joint": -1.27, 

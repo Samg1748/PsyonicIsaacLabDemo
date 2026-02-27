@@ -30,7 +30,7 @@ Notes:
 ### 4) Configure Isaaclab offsets if needed
 - If there is an offset in your robot's "home position" and the sim's home position (0,0,0,0,0,0), then you will need to add offsets in the scripts seen in psyonic_scripts. See area in script with comments: "ADD ARM OFFSETS HERE"
 
-### Testing Isaac lab demo
+### 5) Testing Isaac lab demo
 - To test the Isaaclab demo, go to PsyonicIsaacLabDemo folder
 ```shell
 # gives executable permissions to sh
@@ -39,12 +39,12 @@ sudo chmod +x start_IL_Demo.sh
 ./start_IL_Demo.sh
 ```
 
-### 5) Install ROS2
+### 6) Install ROS2
 - Follow Install ROS2 Jazzy Steps seen here:
     - https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html
     - NOTE: DO NOT ADD "source /opt/ros..." TO YOUR .bashrc!!! Some people suggest this, but this will prevent the demo from working. You should never source ROS2 in the terminal you will run isaacsim in!!!
 
-### Create IL_ROS_venv
+### 7) Create IL_ROS_venv
 - Once ros2 is installed, open a new terminal (not one you plan to launch isaacsim from) and go to the psyonic_ros2_ws
 - Once there, create a venv env 
 ```bash
@@ -76,7 +76,7 @@ source install/setup.bash
 Move to modifying your UR teach pendant
 - This has been tested with Polyscope 3 and 5 (not X yet)
 
-### 6) Create Ethernet Connection
+### 8) Create Ethernet Connection
 - Make sure there is an ethernet connection between the UR Control box and the C
 PU
 - Make sure robot is turned on (check bottom left of tablet)
@@ -84,13 +84,13 @@ PU
 - Create a static address of 192.168.1.10 w/ a subnet mask of 255.255.255.0
 - Click "Apply"
 
-### 7) Set to Tablet to Remote Control
+### 9) Set to Tablet to Remote Control
 - In the top right of the tablet, there should be an icon labelled as "Local Control" or "Remote Control", Change to say "Remote Control"
 
 ## On CPU
 Go back to your CPU
 
-### 8) Create Ethernet Connection
+### 10) Create Ethernet Connection
 - Go to your computer settings
 - Go to "Network"
 - Turn on "Wired"
@@ -109,7 +109,7 @@ sudo ufw disable
 ```
 )
 
-### 9) Configure Ability Hand
+### 11) Configure Ability Hand
 - To connect the ABH to the UR arm, follow the instruction guide to attach the hand via fixture and wire harness. The wire harness should be hooked up to a 12V 8A power source or connected to the batteries (recommend a a 12V 8A power source)
 - ABH hand must be in RS485 mode (if newly arrived hand, should be in this mode by default)
     - If not, use the PSYONIC app to go to gear icon then "Troubleshoot" then "Developer Mode" and send the command of We35 to enable RS485 mode
@@ -120,7 +120,7 @@ ls /dev/ttyUSB0 #could be USB1 etc
 ```
 NOTE: if ttyUSBX is not ttyUSB0, then you need to change the ttyUSB0 to ttyUSBX in the sh files
 
-### 10) Test ROS2 configurations
+### 12) Test ROS2 configurations
 - To test if any errors in ros2 scripts, open a new terminal
 - Go to psyonic_ros2_ws
 ```bash

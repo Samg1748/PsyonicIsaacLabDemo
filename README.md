@@ -148,7 +148,7 @@ cd ~/PsyonicIsaacLabDemo
 Open one terminal
 ```bash
 # activates env where isaaclab was pip installed to
-conda activate $IL_conda_env
+conda activate <IL_conda_env_name>
 
 # goes to PsyonicIsaacLabDemo folder
 cd ~/PsyonicIsaacLabDemo

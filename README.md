@@ -107,7 +107,7 @@ sudo ufw disable
 - Also check to see if you see the USB connection with 
 ```bash
 # lists usbs connected to CPU
-ls /dev/ttyUSB
+ls /dev/ttyUSB0 #could be USB1 etc
 ```
 ### Test ROS2 configurations
 - To test if any errors in ros2 scripts, open a new terminal
@@ -118,9 +118,9 @@ sudo chmod +x start_IL_DEMO_ROS.sh
 ./start_IL_DEMO_ROS.sh
 ```
 - If there are no errors and two processes are started, then start-up works properly!
-### DEMO
+## DEMO
 
-####Sim2Real
+###Sim2Real
 Open one terminal
 ```bash
 # sources ros in terminal
@@ -144,7 +144,7 @@ cd ~/PsyonicIsaacLabDemo
 ./start_IL_Demo.sh
 ```
 
-####Real2Sim
+###Real2Sim
 Open one terminal
 ```bash
 # activates env where isaaclab was pip installed to

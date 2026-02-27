@@ -119,7 +119,7 @@ class PsyonicURSceneCfg(InteractiveSceneCfg):
     robot: ArticulationCfg = ArticulationCfg(
         prim_path="{ENV_REGEX_NS}/Robot", 
         spawn=sim_utils.UsdFileCfg(
-            usd_path="PsyonicIsaacLabDemo/USD_assets/psyonic_UR_right_playground.usd", ##############################
+            usd_path="USD_assets/psyonic_UR_right_playground.usd", ##############################
         ),
         init_state=ArticulationCfg.InitialStateCfg(
             pos=(0.0, 0.0, 0.0),
@@ -174,7 +174,7 @@ class PsyonicURSceneCfg(InteractiveSceneCfg):
     target: RigidObjectCfg = RigidObjectCfg(
             prim_path="{ENV_REGEX_NS}/target",
             spawn=sim_utils.UsdFileCfg(
-                usd_path="PsyonicIsaacLabDemo/USD_assets/beaker_500ml.usd", 
+                usd_path="USD_assets/beaker_500ml.usd", 
                 rigid_props=sim_utils.RigidBodyPropertiesCfg(
                     rigid_body_enabled=True,
                     max_linear_velocity=1000.0,

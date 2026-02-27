@@ -86,7 +86,7 @@ class PsyonicURSceneCfg(InteractiveSceneCfg):
     robot: ArticulationCfg = ArticulationCfg(
         prim_path="{ENV_REGEX_NS}/Robot", 
         spawn=sim_utils.UsdFileCfg(
-            usd_path="PsyonicIsaacLabDemo/USD_assets/psyonic_UR_right_playground.usd", ##############################
+            usd_path="USD_assets/psyonic_UR_right_playground.usd", ##############################
         ),
         init_state=ArticulationCfg.InitialStateCfg(
             pos=(0.0, 0.0, 0.035),

@@ -210,7 +210,12 @@ class PsyonicNode(Node):
 
     def sim_callback(self, msg):
         self.msg = msg
-        self.msg.position[0] += 1.5708 #####CHECK THISSSS
+        self.msg.position[0] += 1.5708 #####ADD ARM OFFSETS HERE!!!
+        # self.msg.position[1] += 0.0 #####ADD ARM OFFSETS HERE!!!
+        # self.msg.position[2] += 0.0 #####ADD ARM OFFSETS HERE!!!
+        # self.msg.position[3] += 0.0 #####ADD ARM OFFSETS HERE!!!
+        # self.msg.position[4] += 0.0 #####ADD ARM OFFSETS HERE!!!
+        # self.msg.position[5] += 0.0 #####ADD ARM OFFSETS HERE!!!
         self.msg.position[6] *= (3.14/180/1.1)
         self.msg.position[7] *= (3.14/180/1.1)
         self.msg.position[8] *= (3.14/180/1.1)

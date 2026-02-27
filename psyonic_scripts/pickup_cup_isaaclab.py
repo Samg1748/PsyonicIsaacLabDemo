@@ -248,6 +248,12 @@ class PsyonicNode(Node):
         self.msg = JointState()
         self.msg.name = ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint', 'index_q1', 'middle_q1', 'ring_q1', 'pinky_q1', 'thumb_q1','index_q2', 'middle_q2', 'ring_q2', 'pinky_q2', 'thumb_q2']
         self.msg.position = actions[0].cpu().tolist()
+        self.msg.position[0] += -1.5708 #####ADD ARM OFFSETS HERE!!!
+        # self.msg.position[1] += 0.0 #####ADD ARM OFFSETS HERE!!!
+        # self.msg.position[2] += 0.0 #####ADD ARM OFFSETS HERE!!!
+        # self.msg.position[3] += 0.0 #####ADD ARM OFFSETS HERE!!!
+        # self.msg.position[4] += 0.0 #####ADD ARM OFFSETS HERE!!!
+        # self.msg.position[5] += 0.0 #####ADD ARM OFFSETS HERE!!!
         self.publisher.publish(self.msg)
         # self.get_logger().info('Published actions to Psyonic_Topic')
 

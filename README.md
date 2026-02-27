@@ -1,4 +1,5 @@
 # PsyonicIsaacLabDemo
+
 Notes:
 - This was designed for a linux CPU
 - Tested with Ubuntu 24.04
@@ -8,7 +9,8 @@ Notes:
 ## On CPU
 
 ### 1) Install VSCode
-- Install VSCode on CPU
+- Install VSCode on CPU (for potential development reasons)
+
 ### 2) Install Isaacsim
 - Download the 5.1 version for x86_64
     - https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/download.html
@@ -27,6 +29,7 @@ Notes:
 
 ### 4) Configure Isaaclab offsets if needed
 - If there is an offset in your robot's "home position" and the sim's home position (0,0,0,0,0,0), then you will need to add offsets in the scripts seen in psyonic_scripts. See area in script with comments: "ADD ARM OFFSETS HERE"
+
 ### Testing Isaac lab demo
 - To test the Isaaclab demo, go to PsyonicIsaacLabDemo folder
 ```shell
@@ -35,10 +38,12 @@ sudo chmod +x start_IL_Demo.sh
 # runs isaaclab-side sh for isaaclab demo
 ./start_IL_Demo.sh
 ```
+
 ### 5) Install ROS2
 - Follow Install ROS2 Jazzy Steps seen here:
     - https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html
     - NOTE: DO NOT ADD "source /opt/ros..." TO YOUR .bashrc!!! Some people suggest this, but this will prevent the demo from working. You should never source ROS2 in the terminal you will run isaacsim in!!!
+
 ### Create IL_ROS_venv
 - Once ros2 is installed, open a new terminal (not one you plan to launch isaacsim from) and go to the psyonic_ros2_ws
 - Once there, create a venv env 
@@ -70,6 +75,7 @@ source install/setup.bash
 ## On UR Tablet
 Move to modifying your UR teach pendant
 - This has been tested with Polyscope 3 and 5 (not X yet)
+
 ### 6) Create Ethernet Connection
 - Make sure there is an ethernet connection between the UR Control box and the C
 PU
@@ -77,10 +83,13 @@ PU
 - Go to Settings/System/Network under the hamburger (three horizontal lines in top right)
 - Create a static address of 192.168.1.10 w/ a subnet mask of 255.255.255.0
 - Click "Apply"
+
 ### 7) Set to Tablet to Remote Control
 - In the top right of the tablet, there should be an icon labelled as "Local Control" or "Remote Control", Change to say "Remote Control"
+
 ## On CPU
 Go back to your CPU
+
 ### 8) Create Ethernet Connection
 - Go to your computer settings
 - Go to "Network"
@@ -109,6 +118,8 @@ sudo ufw disable
 # lists usbs connected to CPU
 ls /dev/ttyUSB0 #could be USB1 etc
 ```
+NOTE: if ttyUSBX is not ttyUSB0, then you need to change the ttyUSB0 to ttyUSBX in the sh files
+
 ### 10) Test ROS2 configurations
 - To test if any errors in ros2 scripts, open a new terminal
 - Go to psyonic_ros2_ws
@@ -118,6 +129,7 @@ sudo chmod +x start_IL_DEMO_ROS.sh
 ./start_IL_DEMO_ROS.sh
 ```
 - If there are no errors and two processes are started, then start-up works properly!
+
 ## DEMO
 
 ### Sim2Real

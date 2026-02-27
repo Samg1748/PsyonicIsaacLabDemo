@@ -111,6 +111,7 @@ sudo ufw disable
 
 ### 11) Configure Ability Hand
 - To connect the ABH to the UR arm, follow the instruction guide to attach the hand via fixture and wire harness. The wire harness should be hooked up to a 12V 8A power source or connected to the batteries (recommend a a 12V 8A power source)
+    - Use ability-hand README or Psyonic support additional resources: https://github.com/psyonicinc/ability-hand-api
 - ABH hand must be in RS485 mode (if newly arrived hand, should be in this mode by default)
     - If not, use the PSYONIC app to go to gear icon then "Troubleshoot" then "Developer Mode" and send the command of We35 to enable RS485 mode
 - Also check to see if you see the USB connection with 

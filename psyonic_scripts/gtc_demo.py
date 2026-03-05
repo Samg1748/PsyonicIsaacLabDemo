@@ -215,7 +215,7 @@ class PickupCupCfg(ManagerBasedEnvCfg):
         # step settings
         self.decimation = 1  # env step ex: every 4 sim steps: (200Hz / 4 = 50Hz)
         # simulation settings
-        self.sim.dt = 0.05  # sim step every 5ms: 200Hz
+        self.sim.dt = 0.015  # sim step every 5ms: 200Hz
 
 
 class PsyonicNode(Node):

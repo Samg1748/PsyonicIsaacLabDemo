@@ -31,6 +31,9 @@ class GTC_demo(Node):
     def inverse3_manus_sub_callback(self, msg):
         # publish new msg to Psyonic_Topic
         #confirm manus hands publish in norm vals
+
+        # maybe do delta_3d_pose for UR w/moveL or servoL??? or IK
+
         self.publish_psyonic(msg)
         
 

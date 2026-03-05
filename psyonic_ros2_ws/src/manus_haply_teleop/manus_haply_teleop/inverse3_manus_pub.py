@@ -7,6 +7,8 @@ from rclpy.executors import MultiThreadedExecutor
 import threading
 import time
 
+import HaplyHardwareAPI
+
 class Inverse3ManusPubisher(Node):
     def __init__(self):
         super().__init__("Inverse3ManusPub")
@@ -16,15 +18,17 @@ class Inverse3ManusPubisher(Node):
                     depth=1 
                 )
         self.publisher = self.create_publisher(JointState, 'Inverse3Manus_Topic', qos_profile_best_effort)
-        self.sub_manus = self.create_subscription(ManusGlove, 'manus_glove_0', self.teleop_manus_callback, qos_profile_best_effort)
-        
+        # temp disabled!!
+        # self.sub_manus = self.create_subscription(ManusGlove, 'manus_glove_0', self.teleop_manus_callback, qos_profile_best_effort)
+        # replaced with this for testing
+        self.timer = self.create_timer(0.005, self.teleop_manus_callback)
         self.pub_msg = JointState()
         self.pub_msg.name = ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint', 'index_q1', 'middle_q1', 'ring_q1', 'pinky_q1', 'thumb_q2', 'thumb_q1']
 
-        self.manus_latest = list(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-        self.haply_latest = list(0.0, 0.0, 0.0, 0.0, 0.0, 0.0) #CHECK THISSS
+        self.manus_latest = list([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        self.haply_latest = list([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) # form of delta 3d pos then 3 euler angles
 
-        self.lock = threading.lock()
+        self.lock = threading.Lock()
         self.running = True
 
         self.haply_thread = threading.Thread(target=self.teleop_haply)
@@ -32,7 +36,7 @@ class Inverse3ManusPubisher(Node):
         self.haply_thread.start()
 
 
-    def teleop_manus_callback(self, msg):
+    def teleop_manus_callback(self, msg=None): #has msg as input in real
         # gets manus reading
         msg
         # formats manus reading to store in latest var
@@ -40,23 +44,37 @@ class Inverse3ManusPubisher(Node):
 
         # gets haply latest
         with self.lock:
-            self.pub_msg.position = self.manus_latest + self.haply_latest
-
+            # self.pub_msg.position =  self.haply_latest + self.manus_latest
+            self.pub_msg.position = self.haply_latest + [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        
         # publishes to Inverse_Manus_Topic
-        self.pub_msg.position = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         self.publisher.publish(self.pub_msg)
-        pass
+        
 
     def teleop_haply(self):
 
+        com_stream = HaplyHardwareAPI.SerialStream(
+            "/dev/serial/by-id/usb-Teensyduino_Haply_inverse3_12651940-if00"
+        ) # will need to be tailored to each cpu!!
+        inverse3 = HaplyHardwareAPI.Inverse3(com_stream)
+        response_to_wakeup = inverse3.device_wakeup_dict()
+        # print the response to the wakeup command
+        print("connected to device {}".format(response_to_wakeup["device_id"]))
+
+        start_pos, _ = inverse3.end_effector_force()
         # while node is active, thread runs
         while self.running and ros2.ok():
-            pass
-        # gets haply reading
+            # gets delta_haply reading
+            position, velocity = inverse3.end_effector_force()
+            true_pos = [-2*(position[1] - start_pos[1]), -2*(position[0] - start_pos[0]), 2*(position[2] - start_pos[2]), 0.0, 0.0, 0.0]
+            print("position: {}".format(true_pos))
+            time.sleep(0.005)
 
-        # formats reading to store in latest var
-        self.haply_latest
-        pass
+
+            # formats reading to store in latest var
+            with self.lock:
+                self.haply_latest = true_pos
+
         
     def destroy_node(self):
         self.running= False
@@ -72,7 +90,7 @@ def main():
     executor.add_node(pub)
 
     try:
-        ros2.spin(pub)
+        executor.spin()
     except KeyboardInterrupt:
         pass
 

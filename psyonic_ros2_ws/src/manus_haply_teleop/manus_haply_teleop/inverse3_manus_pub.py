@@ -8,6 +8,8 @@ import threading
 import time
 
 import HaplyHardwareAPI
+from scipy.spatial.transform import Rotation as R
+import numpy as np
 
 class Inverse3ManusPubisher(Node):
     def __init__(self):
@@ -55,19 +57,67 @@ class Inverse3ManusPubisher(Node):
 
         com_stream = HaplyHardwareAPI.SerialStream(
             "/dev/serial/by-id/usb-Teensyduino_Haply_inverse3_12651940-if00"
-        ) # will need to be tailored to each cpu!!
+        ) 
+        
+        # will need to be tailored to each cpu!!
         inverse3 = HaplyHardwareAPI.Inverse3(com_stream)
+        
         response_to_wakeup = inverse3.device_wakeup_dict()
         # print the response to the wakeup command
         print("connected to device {}".format(response_to_wakeup["device_id"]))
+        
+        # will need to be tailored to each cpu!!
+        handle_stream = HaplyHardwareAPI.SerialStream(
+            "/dev/serial/by-id/usb-ZEPHYR_Haply_USB_Transceiver_75F377C62ED31F59-if00"
+        )
+        versegrip = HaplyHardwareAPI.Handle(handle_stream)
+
 
         start_pos, _ = inverse3.end_effector_force()
+
+        while True:
+            start_orient = versegrip.GetVersegripStatus()
+            quat = start_orient['quaternion']  # [w,x,y,z]
+
+            quat_scipy = [quat[1], quat[2], quat[3], quat[0]]
+
+            if np.linalg.norm(quat_scipy) > 1e-6:
+                print("got good val")
+                break
+
+        start_rot = R.from_quat(quat_scipy) # see that you get valid quat start
+
+
         # while node is active, thread runs
         while self.running and ros2.ok():
             # gets delta_haply reading
             position, velocity = inverse3.end_effector_force()
-            true_pos = [-2*(position[1] - start_pos[1]), -2*(position[0] - start_pos[0]), 2*(position[2] - start_pos[2]), 0.0, 0.0, 0.0]
-            print("position: {}".format(true_pos))
+            response = versegrip.GetVersegripStatus()
+            try:
+                # reorder Haply quaternion for scipy
+                quat_scipy = [response['quaternion'][1],
+                            response['quaternion'][2],
+                            response['quaternion'][3],
+                            response['quaternion'][0]]
+                new_rot = R.from_quat(quat_scipy)
+
+                # relative rotation
+                rot_delta = new_rot * start_rot.inv()
+
+                # axis-angle vector
+                rotvec_delta = rot_delta.as_rotvec()
+                # angle = np.linalg.norm(rotvec_delta)
+                # if angle > 1e-6:
+                #     axis = rotvec_delta / angle
+                # else:
+                #     axis = [0, 0, 0]
+                # mind the coordinate frame and change here if needed (x,y,z, Rx, Ry, Rz)
+                true_pos = [-2*(position[1] - start_pos[1]), -2*(position[0] - start_pos[0]), 2*(position[2] - start_pos[2]), float(rotvec_delta[0]), float(rotvec_delta[1]), float(rotvec_delta[2])]
+                # print(f"position: {true_pos}")
+                print(rot_delta.as_euler(seq="xyz", degrees=True))
+            except Exception as e:
+                pass
+
             time.sleep(0.005)
 
 

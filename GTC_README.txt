@@ -1,6 +1,8 @@
 Here is quick high-level overview of steps for haply, ur, psyonic integration through python:
 
 Follow:
+git cloning the repo with git@github
+ 
 6) installing ROS2
 7) installing venv libs
 8), 9), 10) for UR and CPU connections

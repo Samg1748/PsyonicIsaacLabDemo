@@ -5,22 +5,26 @@ Follow:
 7) installing venv libs
 8), 9), 10), 11) for UR and CPU connections
 
-then Connect haply to CPU
+then Connect haply to CPU (THIS DOES NOT USE VERSEGRIP. IT CAN BE CONNECTED BUT WILL NOT READ ITS VALUES, STILL WIP)
 this is done by:
 
-installing haply hub then seeing if you see the inverse3 and versegrip (if not, try doing "sudo chmod 666 /dev/ttyACM*" and "sudo chmod 666 /dev/ttyUSB*" then restarting haply hub
+making sure usb from haply is in usb port of CPU and haply is powered (if both, should show red on haply)
 
+installing haply hub then seeing if you see the inverse3 (and versegrip but not needed) (if cannot see haply, try doing 
+"sudo chmod 666 /dev/ttyACM*" and "sudo chmod 666 /dev/ttyUSB*" then restarting haply hub then looking again
 
-once connected, may need to calibrate (follow instruction in haply hub on this (bottom left I believe?)
+once connected, if haply is purple then needs to calibrate (follow instruction in haply hub on this (bottom left I believe?))
 
-Once connected and calibrated, turn off haply hub
+Once connected and calibrated, turn off haply hub (haply should show red again, if still green, need to kill haply_hub process (ask ChatGPT for command for this)
 
-do "ls -l /dev/serial/by-id/" and look for one that looks like haply based and one for the verse grip if using one
-copy the path of this (the "/dev/serial/by-id/haply-dfdsf-dsff" part) into the script at psyonic_ros2_ws/src/manus_haply_teleop/manus_haply_teleop/inverse3_manus.py) it is on line 58 (com_stream = HaplyHardwareAPI.SerialStream(<insert haply path here>) and the verse grip one goes into the handle_stream = HaplyHardwareAPI.SerialStream(<insert versegrip path here>))
+do "ls -l /dev/serial/by-id/" and look for one that looks like haply-based (not versegrip one if versegrip also connected)
 
-if not using verse_grip, let me know and I can adjust code for it
+copy the path of this (the "/dev/serial/by-id/haply-dfdsf-dsff" part) into the script at 
+psyonic_ros2_ws/src/manus_haply_teleop/manus_haply_teleop/inverse3_manus.py 
+it is on line 58 (com_stream = HaplyHardwareAPI.SerialStream(<insert haply path here>))
 
-after that, exit the script and return to psyonic_ros2_ws then do "colcon build"
+after that, save and exit the script and return to psyonic_ros2_ws folder then do "source /opt/ros/jazzy/setup.bash" or whatever ros2 source needed (check your tutorial) then
+"colcon build" to set-up ros env, should be error free if correct
 
 after build,
 do "./start_GTC_demo.sh" and everything should activate, if it doesn't work, let me know!

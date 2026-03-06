@@ -1,5 +1,5 @@
 sudo chmod 666 /dev/ttyUSB*
-sudo chmod 666 /dev/ttyACM0
+sudo chmod 666 /dev/ttyACM*
 source /opt/ros/jazzy/setup.bash
 source IL_ROS_venv/bin/activate
 export PYTHONPATH=$PYTHONPATH:$(pwd)/IL_ROS_venv/lib/python3.12/site-packages

@@ -3,7 +3,8 @@ Here is quick high-level overview of steps for haply, ur, psyonic integration th
 Follow:
 6) installing ROS2
 7) installing venv libs
-8), 9), 10), 11) for UR and CPU connections
+8), 9), 10) for UR and CPU connections
+11) for Psyonic hand configuration (if using wiring harness from UR arms, just plug the usb side into the CPU you are using)
 
 then Connect haply to CPU (THIS DOES NOT USE VERSEGRIP. IT CAN BE CONNECTED BUT WILL NOT READ ITS VALUES, STILL WIP)
 this is done by:
